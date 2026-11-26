@@ -25,6 +25,7 @@ Use these guidelines when designing or changing interfaces in any project. Treat
 - Reserve strongly rounded or circular shapes for elements that benefit from them, such as avatars, media thumbnails, or intentionally pill-shaped status indicators.
 - Use color consistently to communicate state and hierarchy. Maintain readable contrast for primary, secondary, disabled, and interactive text.
 - Keep badges and pills for compact status labels; use plain text when a badge adds no useful meaning.
+- On dark surfaces, check scrollable controls for browser-default white scrollbar corners or textarea resize grips. Style scrollbar tracks, thumbs, corners, and resize handles to match the surface; disable textarea resizing with `resize: none` when resizing is unnecessary. Check the bottom-right corner as well as the scrollbar itself.
 
 ## Interaction and accessibility
 
