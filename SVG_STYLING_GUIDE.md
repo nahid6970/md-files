@@ -2,6 +2,13 @@
 
 This guide explains how the interactive **SVG Live Preview and Color Extraction/Styling** feature works, so you can easily implement it in your other PyQt6 projects!
 
+## Keeping SVG Artwork Intact
+
+- Copy the complete source markup from the SVG source page, from the opening `<svg>` tag through the closing `</svg>` tag. Avoid copying a preview, a single path, or markup that has already been rewritten by an editor.
+- Preserve the original SVG text when saving. Use a separate parsed or rendered copy for previews; rebuilding the saved document from a limited element/attribute allowlist can remove paths, styles, gradients, and other artwork.
+- When an older saved icon looks incomplete, clear that old code and paste the complete source SVG again. Re-rendering the saved copy cannot restore markup that was already removed.
+- Test icons with multiple `<path>` elements, `<defs>`, gradients, and styles. Refresh the preview after replacing code or colors.
+
 ---
 
 ## 1. Core Concepts

@@ -26,6 +26,7 @@ Use these guidelines when designing or changing interfaces in any project. Treat
 - Use color consistently to communicate state and hierarchy. Maintain readable contrast for primary, secondary, disabled, and interactive text.
 - Keep badges and pills for compact status labels; use plain text when a badge adds no useful meaning.
 - On dark surfaces, check scrollable controls for browser-default white scrollbar corners or textarea resize grips. Style scrollbar tracks, thumbs, corners, and resize handles to match the surface; disable textarea resizing with `resize: none` when resizing is unnecessary. Check the bottom-right corner as well as the scrollbar itself.
+- For user-pasted SVG icons, preserve the complete source markup when saving and use a full SVG renderer for previews. Check icons with multiple paths, styles, and gradients; rebuilding an icon from a limited path allowlist can silently remove artwork.
 
 ## Interaction and accessibility
 
