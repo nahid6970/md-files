@@ -7,7 +7,7 @@ This is the end-to-end record of setting up and building the T3 Code source chec
 - CPU: AMD Ryzen 5 3400G, 4 cores / 8 threads
 - RAM: about 14 GB
 - Free disk space when checked: about 278 GB
-- Installer produced: `C:\Users\nahid\t3code\release\T3-Code-0.1.13-x64.exe` (latest rebuild: 212,420,496 bytes; about 203 MiB)
+- Installer produced: `C:\Users\nahid\t3code\release\T3-Code-0.1.13-x64.exe` (latest rebuild: 212,437,419 bytes; about 203 MiB)
 - The installer is an unsigned Windows `.exe` (NSIS), not an MSI.
 
 ## What was needed
@@ -142,7 +142,7 @@ The desktop composer uses the shared web UI. The source change restores three se
 
 ### Reapplying after an upstream update
 
-When updating from the original T3 Code repository, inspect these files for upstream changes before reapplying this customization. The implementation depends on the provider-trait helpers and `EffortLevels` in `ComposerModelEffort.tsx`, the `effortColumn`/trigger props on the model picker, the `composer.effort` and `composer.mode` shortcut routing, and the adaptive resting-control/overflow behavior. If upstream refactors any of those, re-create the same behavior using the new component boundaries instead of copying an old file over the updated one.
+When updating from the original T3 Code repository, inspect these files for upstream changes before reapplying this customization. The implementation depends on the provider-trait helpers and `EffortLevels` in `ComposerModelEffort.tsx`, the `effortColumn`/trigger props on the model picker, the `composer.effort` and `composer.mode` shortcut routing, and the adaptive resting-control/overflow behavior. The native inspector feature also depends on the app-origin check and `context-menu` handler in `apps/desktop/src/window/DesktopWindow.ts`, Electron `WebFrameMain.executeJavaScript`, and the `ElectronShell.copyText` service. If upstream refactors any of these, re-create the behavior using the new component boundaries instead of copying an old file over the updated one.
 
 The desired end state is:
 
@@ -151,5 +151,11 @@ The desired end state is:
 3. A separate access button follows reasoning and opens the runtime permission choices, including when access matches the default. If it moves for lack of space, permissions remain reachable from the composer overflow menu, without duplicate shortcut targets.
 4. The permissions popup lists each access mode vertically, with an icon, name, and description on every row; the selected row is highlighted.
 5. The reasoning and access controls continue to move into the compact overflow menu at narrow composer widths.
+
+## Right-click element inspector
+
+The native desktop context menu now offers **Inspect UI element**, **Copy UI element details**, and **Copy CSS selector** when right-clicking the T3 Code app UI. Inspect enters pick mode: move over the UI to highlight elements with a blue overlay, then click one to open the panel. Escape cancels pick mode; after selecting, use **Inspect another**, ×, or Escape to continue or close. The panel lists the selected element's selector, classes, attributes, computed styles, opening HTML tag, and short text preview, with per-row copy buttons. It opens below the title bar so it does not cover the window controls. The selector prefers a unique ID or stable attributes (`data-testid`, `data-test`, `data-cy`, `aria-label`, `role`, or `name`) and falls back to a tag/`:nth-of-type()` path. The details report uses the Electron clipboard service. The menu is limited to frames on the T3 Code application origin; embedded browser pages keep their own context menu. The regular Cut, Copy, Paste, and Select All actions are unchanged.
+
+For a future upstream reapply, find the `contents.on("context-menu", ...)` handler and append the inspector items only for the app's own origin. Copy actions query the clicked element in `params.frame` at `params.x`/`params.y`; inspect mode instead installs temporary hover/click listeners into that same frame and cleans them up on selection, cancel, or close. Do not run the inspector against embedded or third-party browser contents. Keep selector generation and output formatting bounded so copied text remains useful to paste into a code discussion.
 
 After resolving upstream conflicts, run `vp run --filter @t3tools/web typecheck`, then build the Windows installer with the command and environment variable in the build-issues section above. The UI source is shared with the web client; this change affects the desktop and web composer where that component is used.
