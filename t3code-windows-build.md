@@ -7,7 +7,7 @@ This is the end-to-end record of setting up and building the T3 Code source chec
 - CPU: AMD Ryzen 5 3400G, 4 cores / 8 threads
 - RAM: about 14 GB
 - Free disk space when checked: about 278 GB
-- Installer produced: `C:\Users\nahid\t3code\release\T3-Code-0.1.13-x64.exe` (latest rebuild: 212,424,797 bytes; about 203 MiB)
+- Installer produced: `C:\Users\nahid\t3code\release\T3-Code-0.1.13-x64.exe` (latest rebuild: 212,420,496 bytes; about 203 MiB)
 - The installer is an unsigned Windows `.exe` (NSIS), not an MSI.
 
 ## What was needed
@@ -136,6 +136,7 @@ The desktop composer uses the shared web UI. The source change restores three se
 - `apps/web/src/components/ChatView.tsx` used to add `ComposerContextPermissions` as the trailing control in `BranchToolbar`, below the composer. That trailing control was removed so the access button is owned by `ComposerControlsBar` and appears directly after reasoning.
 - `apps/web/src/components/chat/ChatComposer.tsx` no longer passes the `permissionsShownInStrip` flag, which previously hid the access chip when the context strip was visible.
 - `apps/web/src/components/chat/ComposerModelEffort.tsx` adds and exports `ComposerReasoningControl`. It reuses `EffortLevels`, which reads the selected model's provider traits and updates the selected reasoning level. `ComposerPickerFooter` accepts `showPermissions` so permissions do not appear in two places.
+- `apps/web/src/components/chat/ComposerFooterControls.tsx` renders the access popup as a vertical list. Every runtime mode row shows its icon, name, and description; the selected row is highlighted. This replaces the horizontal icon-only mode strip and the separate current-mode description below it.
 - `apps/web/src/components/chat/CompactComposerControlsMenu.tsx` can show a hidden reasoning control in the compact overflow menu, alongside permissions when those controls do not fit.
 - `apps/web/src/components/chat/composerControlsOwnership.ts` keeps the access block visible at the default mode and moves its permissions choice into overflow if the block does not fit. Keep this ownership logic in sync with the order of blocks in `ComposerControlsBar.tsx`.
 
@@ -148,6 +149,7 @@ The desired end state is:
 1. The model picker trigger displays the model name only; its popup lists models without a docked reasoning column.
 2. A separate reasoning button shows the selected level and opens the selected model's available levels.
 3. A separate access button follows reasoning and opens the runtime permission choices, including when access matches the default. If it moves for lack of space, permissions remain reachable from the composer overflow menu, without duplicate shortcut targets.
-4. The reasoning and access controls continue to move into the compact overflow menu at narrow composer widths.
+4. The permissions popup lists each access mode vertically, with an icon, name, and description on every row; the selected row is highlighted.
+5. The reasoning and access controls continue to move into the compact overflow menu at narrow composer widths.
 
 After resolving upstream conflicts, run `vp run --filter @t3tools/web typecheck`, then build the Windows installer with the command and environment variable in the build-issues section above. The UI source is shared with the web client; this change affects the desktop and web composer where that component is used.
