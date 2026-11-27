@@ -158,4 +158,20 @@ The native desktop context menu now offers **Inspect UI element**, **Copy UI ele
 
 For a future upstream reapply, find the `contents.on("context-menu", ...)` handler and append the inspector items only for the app's own origin. Copy actions query the clicked element in `params.frame` at `params.x`/`params.y`; inspect mode instead installs temporary hover/click listeners into that same frame and cleans them up on selection, cancel, or close. Do not run the inspector against embedded or third-party browser contents. Keep selector generation and output formatting bounded so copied text remains useful to paste into a code discussion.
 
-After resolving upstream conflicts, run `vp run --filter @t3tools/web typecheck`, then build the Windows installer with the command and environment variable in the build-issues section above. The UI source is shared with the web client; this change affects the desktop and web composer where that component is used.
+## Sidebar thread search setting
+
+The sidebar search includes chat message contents by default. In **Settings → General → Search chat history**, turn the setting off to limit sidebar results to thread and project names. This is a client preference; command-palette search (`Cmd/Ctrl+K`) continues to include message contents.
+
+When **Boring sidebar (group by project)** is enabled, General settings also shows **Include project threads in search**. With this enabled, searching for a project name shows its project heading and all of its child threads together. This option is enabled by default and only applies to sidebar search.
+
+## Sidebar thread card settings
+
+In **Settings → General → Thread card details**, each sidebar thread card field can be shown or hidden independently. The controls cover project name, machine name, activity time, provider icon, pull request and issue badges, Git change counts, and terminal status. A live example card updates as the switches change. Hiding **Machine name** removes the local or remote system label below each thread title.
+
+The card shows only the most recently used agent/provider icon, placed immediately before the activity time. This keeps the card compact when a thread has used multiple agents. The card field choices are client settings and do not change thread data.
+
+## Chat turn navigator
+
+The chat timeline has a compact vertical rail beside the message column, with one clickable dot for each user turn. Selecting a dot scrolls that turn into view; the current turn and hovered turn use a blue dot. The rail grows with the number of turns, with a 112 px minimum and a 320 px maximum, so long conversations do not create a full-height rail. The previous/next arrow controls are centered on the rail, and keyboard users can move between dots with the arrow keys, Home, and End.
+
+After resolving upstream conflicts, run `vp run --filter @t3tools/web typecheck`, then build the Windows installer with the command and environment variable in the build-issues section above. These UI changes use shared web components, so they appear in both the desktop build and web client wherever those components are used.

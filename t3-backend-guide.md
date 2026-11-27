@@ -43,6 +43,20 @@ t3 service install
 t3 service start
 ```
 
+### Sidebar and chat navigation in a connected app
+
+When using a web or desktop T3 Code client with this backend, **Settings → General → Search chat history** controls whether sidebar searches also match message contents. It is enabled by default; turn it off to search thread and project names only. This client preference does not change the backend service or command-palette search.
+
+With **Boring sidebar (group by project)** enabled, **Include project threads in search** adds the matching project heading and all its child threads when a query matches the project name. It applies only to sidebar search and is enabled by default.
+
+### Sidebar thread card details
+
+In **Settings → General → Thread card details**, choose whether sidebar cards show the project name, machine name, activity time, provider icon, pull request and issue badges, Git change counts, and terminal status. A live preview reflects the selected fields. Turning off **Machine name** hides the local or remote system name shown under thread titles. Cards show only the most recently used agent/provider icon, immediately before the activity time.
+
+### Chat turn navigator
+
+The connected web or desktop client can show a vertical rail beside the conversation, with one clickable dot per user turn. Clicking a dot scrolls that turn into view; the current and hovered turns are blue. The rail scales with the number of turns and is capped at 320 px, with a 112 px minimum. The previous/next arrows align with the rail, and keyboard navigation supports the arrow keys, Home, and End. These are client UI preferences and do not change the headless backend service.
+
 ---
 
 ### Uninstallation
@@ -157,7 +171,7 @@ If you prefer managing your server instances via **PM2** instead of native syste
 # Install PM2 globally
 npm install -g pm2
 
-# Spin up the server engine 
+# Spin up the server engine
 pm2 start t3 --name "t3-backend" -- serve
 
 # Control commands
