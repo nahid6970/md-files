@@ -7,7 +7,7 @@ This is the end-to-end record of setting up and building the T3 Code source chec
 - CPU: AMD Ryzen 5 3400G, 4 cores / 8 threads
 - RAM: about 14 GB
 - Free disk space when checked: about 278 GB
-- Installer produced: `C:\Users\nahid\t3code\release\T3-Code-0.1.13-x64.exe` (about 203 MB)
+- Installer produced: `C:\Users\nahid\t3code\release\T3-Code-0.1.13-x64.exe` (212,424,616 bytes; about 203 MiB)
 - The installer is an unsigned Windows `.exe` (NSIS), not an MSI.
 
 ## What was needed
@@ -83,16 +83,22 @@ The first attempt failed late in packaging when `electron-fuses` tried to open t
 
 ### Payload contained 104 files; limit was 80
 
-The next attempt failed the repo's Windows payload size check. A diagnostic build with `--keep-stage` showed that the generated `resources\server-compile-cache` contained 38 separate files. The whole package then had 104 files, above the project's limit of 80.
+The normal build reached packaging, then failed Windows payload validation. The retained stage from `vp run dist:desktop:win:x64 --keep-stage` was `C:\Users\nahid\AppData\Local\Temp\t3code-desktop-win-stage-hYQ7JY`. Its `app\dist\win-unpacked` had 104 files, including 38 generated files under `resources\server-compile-cache`. The cache is prepared by `scripts/prepare-server-compile-cache.cjs` after Electron packaging. Without that cache, the package has 66 files and passes the 80-file limit.
 
-For the successful local build, the project's `T3CODE_DESKTOP_UNTRUSTED_BUNDLE=true` mode was used to skip generating this optional cache. That reduced the payload to 66 files and allowed payload validation to pass. It also skips the packaged-bundle self-check, so use this mode only for a build from source you trust. Without the prepared server bytecode cache, first startup may be slower.
+The successful local build set `T3CODE_DESKTOP_UNTRUSTED_BUNDLE=true`. In the build code this both skips generation of the server bytecode cache and skips the packaged-bundle self-check. Only use it for source you trust. The app still runs without the prepared cache; startup may be slower while Electron compiles the server code itself.
 
-PowerShell command that succeeded:
+PowerShell command that succeeded (the variable applies to this PowerShell process):
 
 ```powershell
 cd C:\Users\nahid\t3code
 $env:T3CODE_DESKTOP_UNTRUSTED_BUNDLE = 'true'
-node scripts/build-desktop-artifact.ts --platform win --target nsis --arch x64
+vp run dist:desktop:win:x64
+```
+
+To retain a failed package for inspection, pass `--keep-stage` directly after the Vite+ task name (do not insert a second `--`):
+
+```powershell
+vp run dist:desktop:win:x64 --keep-stage
 ```
 
 The environment variable was set only for that PowerShell process; it was not saved permanently in Windows settings.
@@ -119,3 +125,27 @@ Run `T3-Code-0.1.13-x64.exe` to install the app. It is an installer, not a porta
 - T3 Connect sign-in is optional for local desktop use; it is used for remote access from a phone or browser.
 - A local build uses the T3 app identity and may share app data with another installed T3 Code build. Do not assume it is isolated from T3 Code Nightly or another official build.
 - The build script only adds a GitHub update feed when `T3CODE_DESKTOP_UPDATE_REPOSITORY` or `GITHUB_REPOSITORY` is set. A local build without one of those set likely will not auto-update; rebuild from newer source to update it.
+
+## Restore the older model/reasoning/access controls
+
+The desktop composer uses the shared web UI. The source change restores three separate composer controls, matching the older nightly screenshot in `C:\Users\nahid\Desktop\old_nightly`: a model picker, a reasoning-level picker, and an access/permissions picker. The newer combined model picker no longer shows the effort label beside the model or embeds the reasoning column in its popup.
+
+### Files changed
+
+- `apps/web/src/components/chat/ComposerControlsBar.tsx` assembles the controls. It renders `ComposerReasoningControl` as its own adaptive footer block, removes the reasoning suffix and reasoning column from `ComposerModelPicker`, and assigns the `composer.effort` and `composer.mode` shortcuts to their visible controls. It keeps permissions in the model-picker footer only when the separate access control is hidden; otherwise permissions stay with the access control or overflow menu.
+- `apps/web/src/components/chat/ComposerModelEffort.tsx` adds and exports `ComposerReasoningControl`. It reuses `EffortLevels`, which reads the selected model's provider traits and updates the selected reasoning level. `ComposerPickerFooter` accepts `showPermissions` so permissions do not appear in two places.
+- `apps/web/src/components/chat/CompactComposerControlsMenu.tsx` can show a hidden reasoning control in the compact overflow menu, alongside permissions when those controls do not fit.
+- `apps/web/src/components/chat/composerControlsOwnership.ts` determines whether the reasoning or access block is hidden, where permissions are available, and which control owns the mode shortcut. Keep this ownership logic in sync with the order of blocks in `ComposerControlsBar.tsx`.
+
+### Reapplying after an upstream update
+
+When updating from the original T3 Code repository, inspect these files for upstream changes before reapplying this customization. The implementation depends on the provider-trait helpers and `EffortLevels` in `ComposerModelEffort.tsx`, the `effortColumn`/trigger props on the model picker, the `composer.effort` and `composer.mode` shortcut routing, and the adaptive resting-control/overflow behavior. If upstream refactors any of those, re-create the same behavior using the new component boundaries instead of copying an old file over the updated one.
+
+The desired end state is:
+
+1. The model picker trigger displays the model name only; its popup lists models without a docked reasoning column.
+2. A separate reasoning button shows the selected level and opens the selected model's available levels.
+3. A separate access button opens the runtime permission choices when access differs from the default. If it is hidden or moved for lack of space, permissions remain reachable from the model picker footer or composer overflow menu, without duplicate shortcut targets.
+4. The reasoning and access controls continue to move into the compact overflow menu at narrow composer widths.
+
+After resolving upstream conflicts, run `vp run --filter @t3tools/web typecheck`, then build the Windows installer with the command and environment variable in the build-issues section above. The UI source is shared with the web client; this change affects the desktop and web composer where that component is used.
