@@ -55,7 +55,7 @@ In **Settings → General → Thread card details**, choose whether sidebar card
 
 ### Chat turn navigator
 
-The connected web or desktop client can show a vertical rail beside the conversation, with one clickable dot per user turn. Clicking a dot scrolls that turn into view; the current and hovered turns are blue. The rail scales with the number of turns and is capped at 320 px, with a 112 px minimum. The previous/next arrows align with the rail, and keyboard navigation supports the arrow keys, Home, and End. These are client UI preferences and do not change the headless backend service.
+The connected web or desktop client can show a vertical rail beside the conversation, with one clickable dot per user turn. Clicking a dot scrolls that turn into view and aligns its user message near the top of the viewport. When dot hit areas overlap in long chats, pointer clicks select the dot nearest the click position. On-screen turns, the current turn, and the hovered turn are blue. Visibility is based on rendered chat rows intersecting the timeline viewport, so buffered offscreen turns should not be highlighted. The rail scales with the number of turns and is capped at 320 px, with a 112 px minimum. The previous/next arrows align with the rail, and keyboard navigation supports the arrow keys, Home, and End. These are client UI preferences and do not change the headless backend service.
 
 ---
 
