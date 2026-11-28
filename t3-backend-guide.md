@@ -49,6 +49,8 @@ When using a web or desktop T3 Code client with this backend, **Settings → Gen
 
 With **Boring sidebar (group by project)** enabled, **Include project threads in search** adds the matching project heading and all its child threads when a query matches the project name. It applies only to sidebar search and is enabled by default.
 
+On compatible web and desktop clients, choose **Move to project…** from a thread's sidebar or header menu to reassign it to another project in the same environment. The backend must support the `thread.change-project` orchestration command and persist its `thread.project-changed` event; update older backend installs before using this action. Agents can also use `t3_thread_organize` with `action: "change_project"` and a `targetProjectId`.
+
 ### Sidebar thread card details
 
 In **Settings → General → Thread card details**, choose whether sidebar cards show the project name, machine name, activity time, provider icon, pull request and issue badges, Git change counts, and terminal status. A live preview reflects the selected fields. Turning off **Machine name** hides the local or remote system name shown under thread titles. Cards show only the most recently used agent/provider icon, immediately before the activity time.

@@ -170,6 +170,10 @@ In **Settings → General → Thread card details**, each sidebar thread card fi
 
 The card shows only the most recently used agent/provider icon, placed immediately before the activity time. This keeps the card compact when a thread has used multiple agents. The card field choices are client settings and do not change thread data.
 
+## Move a thread to another project
+
+The web and desktop thread menus include **Move to project…** in the sidebar and thread header. The searchable picker lists other projects in the thread's environment. This feature needs a compatible client and backend: the client dispatches `thread.change-project`, while the server persists the changed project and publishes `thread.project-changed`. The built-in `t3_thread_organize` MCP tool also supports the `change_project` action.
+
 ## Chat turn navigator
 
 The chat timeline has a compact vertical rail beside the message column, with one clickable dot for each user turn. Selecting a dot scrolls that turn into view and aligns its user message near the top of the viewport. When dot hit areas overlap in long chats, pointer clicks select the dot nearest the click position. On-screen turns, the current turn, and the hovered turn use blue dots. Visibility is based on rendered chat rows intersecting the timeline viewport, so buffered offscreen turns should not be highlighted. The rail grows with the number of turns, with a 112 px minimum and a 320 px maximum, so long conversations do not create a full-height rail. The previous/next arrow controls are centered on the rail, and keyboard users can move between dots with the arrow keys, Home, and End.
